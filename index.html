@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Recorrido 360° Laminadora Paulista</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Titillium Web", sans-serif;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 10px;
+      display: none;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+    }
+
+    .tooltip video,
+    .tooltip img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .close-btn {
+      background-color: #0c579b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-family: inherit;
+      margin-top: 2em;
+    }
+
+    .close-btn:hover {
+      background-color: #002d56;
+    }
+
+    select#sceneSelect {
+      font-family: "Titillium Web", sans-serif;
+      font-size: 16px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: white;
+      color: #333;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    select#sceneSelect:hover {
+      border-color: #0c579b;
+    }
+
+    select#sceneSelect:focus {
+      border-color: #0c579b;
+      box-shadow: 0 0 0 2px rgba(34, 108, 255, 0.2);
+    }
+
+    #headerTitle {
+      color: #0c579b;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 8px;
+      z-index: 10000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="tooltip" class="tooltip"></div>
+
+  <div id="welcomeModal" class="tooltip" style="display: block; z-index: 99999;">
+    <img src="./images/bienvenida.jpg" alt="">
+    <p>Bienvenido al recorrido 360° de la fábrica de <span style="font-weight: 600;">Laminación Paulista</span>.<br>Usá las flechas o el menú para avanzar por los sectores.
+    </p>
+    <button class="close-btn" onclick="closeWelcomeModal()">Comenzar</button>
+  </div>
+
+  <div id="headerTitle">Recorrido 360° Laminación Paulista</div>
+
+  <div id="endModal" class="tooltip" style="display: none;">
+    <p>¡Llegaste al final del recorrido!</p>
+    <button class="close-btn" onclick="restartTour()">Volver a empezar</button>
+  </div>
+
+  <div
+    style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+    <img id="nextArrow" src="./images/flecha_adelante.png" alt="Volver"
+      style="width: 78px; height: 48px; cursor: pointer; margin-bottom: 1em;">
+    <img id="prevArrow" src="./images/flecha_atras.png" alt="Adelante"
+      style="width: 78px; height: 48px; cursor: pointer;">
+  </div>
+
+  <!-- 🔽 Menú para ir a escena (solo uno, con opciones reales) -->
+  <div style="position: absolute; bottom: 20px; right: 20px; z-index: 1000;">
+    <select id="sceneSelect" style="padding: 8px; font-size: 16px; width: 300px;">
+      <option disabled selected>Ir a...</option>
+    </select>
+  </div>
+
+  <div style="position: absolute; bottom: 20px; left: 20px; z-index: 1000;">
+    <img id="mapImage" src="./images/mapa_1.png" alt="Mapa"
+      style="width: 220px; height: auto; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.3);">
+  </div>
+
+  <a-scene vr-mode-ui="enabled: false">
+    <a-assets>
+      <img id="arrowImg" src="./images/flecha_naranja.png" crossorigin="anonymous">
+    </a-assets>
+
+    <a-sky id="sky" rotation="0 -90 0"></a-sky>
+
+    <a-entity rotation="0 350 0">
+      <a-entity id="camera" camera="fov: 80" look-controls>
+        <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable" position="0 0 -1"
+          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+          material="color: white; shader: flat; visible: false">
+        </a-entity>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    let currentSceneId = "scene1";
+
+    const rawScenes = [
+      {
+        id: "scene1",
+        image: "./images/recorrido_1.jpg",
+        label: "Fundicion",
+        tooltip: "Aquí se realiza el proceso de fundición a altas temperaturas.",
+        media: { type: "video", src: "./images/modal/modal1.mp4" }
+      },
+      {
+        id: "scene2",
+        image: "./images/recorrido_2.jpg",
+        label: "Bobinado",
+        tooltip: "Aquí se realiza el proceso de bobinado con dos rodillos fijos.",
+        media: { type: "video", src: "./images/modal/modal2.mp4" }
+      },
+      {
+        id: "scene3",
+        image: "./images/recorrido_3.jpg",
+        label: "Bobinas",
+        tooltip: "Aquí se almacenan las bobinas para posterior procesamiento.",
+        media: { type: "image", src: "./images/modal/modal3.png" }
+      },
+      {
+        id: "scene4",
+        image: "./images/recorrido_4.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 4.",
+        media: null
+      },
+      {
+        id: "scene5",
+        image: "./images/recorrido_5.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 5.",
+        media: null
+      },
+      {
+        id: "scene6",
+        image: "./images/recorrido_6.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 6.",
+        media: null
+      },
+      {
+        id: "scene7",
+        image: "./images/recorrido_7.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 7.",
+        media: null
+      },
+      {
+        id: "scene8",
+        image: "./images/recorrido_8.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 8.",
+        media: null
+      },
+      {
+        id: "scene9",
+        image: "./images/recorrido_9.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 9.",
+        media: null
+      },
+      {
+        id: "scene10",
+        image: "./images/recorrido_10.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 10.",
+        media: null
+      },
+      {
+        id: "scene11",
+        image: "./images/recorrido_11.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 11."
+      },
+      {
+        id: "scene12",
+        image: "./images/recorrido_12.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 12.",
+        media: null
+      },
+      {
+        id: "scene13",
+        image: "./images/recorrido_13.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 13.",
+        media: null
+      },
+      {
+        id: "scene14",
+        image: "./images/recorrido_14.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 14.",
+        media: null
+      },
+      {
+        id: "scene15",
+        image: "./images/recorrido_15.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 15.",
+        media: null
+      },
+      {
+        id: "scene16",
+        image: "./images/recorrido_16.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 16.",
+        media: null
+      },
+      {
+        id: "scene17",
+        image: "./images/recorrido_17.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 17.",
+        media: null
+      },
+      {
+        id: "scene18",
+        image: "./images/recorrido_18.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 18.",
+        media: null
+      },
+      {
+        id: "scene19",
+        image: "./images/recorrido_19.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 19.",
+        media: null
+      },
+      {
+        id: "scene20",
+        image: "./images/recorrido_20.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 20.",
+        media: null
+      },
+      {
+        id: "scene21",
+        image: "./images/recorrido_21.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 21.",
+        media: null
+      },
+      {
+        id: "scene22",
+        image: "./images/recorrido_22.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 22.",
+        media: null
+      },
+      {
+        id: "scene23",
+        image: "./images/recorrido_23.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 23.",
+        media: null
+      },
+      {
+        id: "scene24",
+        image: "./images/recorrido_24.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 24.",
+        media: null
+      },
+      {
+        id: "scene25",
+        image: "./images/recorrido_25.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 25.",
+        media: null
+      },
+      {
+        id: "scene26",
+        image: "./images/recorrido_26.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 26.",
+        media: null
+      },
+      {
+        id: "scene27",
+        image: "./images/recorrido_27.jpg",
+        label: "Info",
+        tooltip: "Esto es un cartel informativo del sector 27.",
+        media: null
+      }
+      // ...continuar hasta scene27
+    ];
+
+    const scenes = rawScenes.map((scene, index) => {
+      const hotspots = [
+        {
+          position: "5 1 -3",
+          rotation: "0 -100 0",
+          color: "#0c579b",
+          label: scene.label,
+          tooltip: scene.tooltip
+        }
+      ];
+
+      if (index === 1) {
+        hotspots[0].position = "3 -1 -4";// cartel más a la izquierda
+        hotspots[0].rotation = "0 -50 0";
+      }
+
+      if (index === 2) {
+        hotspots[0].position = "5 -1 -3";   // cartel más a la izquierda
+        hotspots[0].rotation = "0 -100 0";
+      }
+
+
+      if (index > 0) {
+        scene.backTarget = `scene${index}`;
+      }
+
+
+      return {
+        id: scene.id,
+        image: scene.image,
+        label: scene.label,
+        tooltip: scene.tooltip,
+        media: scene.media,
+        hotspots
+      };
+    });
+
+    function showTooltip(text) {
+      const tooltip = document.getElementById("tooltip");
+      const sceneData = scenes.find(s => s.id === currentSceneId);
+
+      let mediaHTML = "";
+
+      if (sceneData && sceneData.media) {
+        if (sceneData.media.type === "video") {
+          mediaHTML = `
+        <video autoplay muted loop playsinline style="width: 100%; border-radius: 8px; margin-bottom: 16px;">
+          <source src="${sceneData.media.src}" type="video/mp4">
+          Tu navegador no soporta video HTML5.
+        </video>`;
+        } else if (sceneData.media.type === "image") {
+          mediaHTML = `
+        <img src="${sceneData.media.src}" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />`;
+        }
+      }
+
+      tooltip.innerHTML = `
+    ${mediaHTML}
+    <p>${text}</p>
+    <button class="close-btn" onclick="document.getElementById('tooltip').style.display='none'">Cerrar</button>
+  `;
+      tooltip.style.display = "block";
+    }
+
+    function createHotspot(hotspot, sceneEl) {
+      if (hotspot.type === "arrow") {
+        const arrow = document.createElement("a-image");
+        arrow.setAttribute("src", "#arrowImg");
+        arrow.setAttribute("class", "clickable");
+        arrow.setAttribute("position", hotspot.position);
+        arrow.setAttribute("rotation", hotspot.rotation);
+        arrow.setAttribute("width", "1.5");
+        arrow.setAttribute("height", "1.5");
+        arrow.setAttribute("animation__mouseenter", "property: scale; to: 1.2 1.2 1; startEvents: mouseenter; dur: 200");
+        arrow.setAttribute("animation__mouseleave", "property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200");
+        arrow.addEventListener("click", () => changeScene(hotspot.targetScene));
+        sceneEl.appendChild(arrow);
+      } else {
+        const plane = document.createElement("a-plane");
+        plane.setAttribute("position", "0 0 0");
+        plane.setAttribute("rotation", "0 0 0");
+        plane.setAttribute("width", "1.5");
+        plane.setAttribute("height", "0.5");
+        plane.setAttribute("color", hotspot.color);
+        plane.setAttribute("class", "clickable");
+        plane.setAttribute("animation__mouseenter", {
+          property: "scale",
+          to: "1.2 1.2 1",
+          startEvents: "mouseenter",
+          dur: 200
+        });
+        plane.setAttribute("animation__mouseleave", {
+          property: "scale",
+          to: "1 1 1",
+          startEvents: "mouseleave",
+          dur: 200
+        });
+        plane.addEventListener("click", () => showTooltip(hotspot.tooltip));
+
+        const label = document.createElement("a-text");
+        label.setAttribute("value", hotspot.label);
+        label.setAttribute("position", "0 0 0.01"); // un poco más adelante del plano
+        label.setAttribute("align", "center");
+        label.setAttribute("color", "white");
+
+        const wrapper = document.createElement("a-entity");
+        wrapper.setAttribute("position", hotspot.position);
+        wrapper.setAttribute("rotation", hotspot.rotation);
+
+        wrapper.appendChild(plane);
+        wrapper.appendChild(label);
+        sceneEl.appendChild(wrapper);
+      }
+    }
+
+    function restartTour() {
+      document.getElementById("endModal").style.display = "none";
+      changeScene("scene1");
+    }
+
+    function renderScene(sceneData) {
+      const scene = document.querySelector("a-scene");
+      const sky = document.querySelector("a-sky");
+      sky.setAttribute("src", sceneData.image);
+
+      document.querySelectorAll(".dynamic-hotspot").forEach(el => el.remove());
+
+      const container = document.createElement("a-entity");
+      container.classList.add("dynamic-hotspot");
+
+      sceneData.hotspots.forEach(h => createHotspot(h, container));
+
+      scene.appendChild(container);
+    }
+    function changeScene(id) {
+      document.getElementById("sceneSelect").value = id;
+
+      // Actualizar imagen de mapa
+      const mapImage = document.getElementById("mapImage");
+      const sceneIndex = scenes.findIndex(s => s.id === id);
+      if (mapImage && sceneIndex !== -1) {
+        mapImage.src = `./images/mapa_${sceneIndex + 1}.png`;
+      }
+
+      const sceneData = scenes.find(s => s.id === id);
+      if (sceneData) {
+        currentSceneId = id;
+        renderScene(sceneData);
+
+        if (sceneIndex === scenes.length - 1) {
+          document.getElementById("endModal").style.display = "block";
+        }
+        // Mostrar o desactivar la flecha "atrás"
+        const prevArrow = document.getElementById("prevArrow");
+        if (prevArrow) {
+          if (sceneIndex === 0) {
+            prevArrow.src = "./images/flecha_inactiva.png";
+            prevArrow.style.pointerEvents = "none";
+            prevArrow.style.opacity = "0.6";
+          } else {
+            prevArrow.src = "./images/flecha_atras.png";
+            prevArrow.style.pointerEvents = "auto";
+            prevArrow.style.opacity = "1";
+          }
+        }
+      }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderScene(scenes[0]);
+
+      const select = document.getElementById("sceneSelect");
+      scenes.forEach(scene => {
+        const option = document.createElement("option");
+        option.value = scene.id;
+        option.textContent = `${scene.id.replace("scene", "Sector ")} – ${scene.label}`;
+        select.appendChild(option);
+      });
+      select.value = scenes[0].id; // Mostrar escena actual
+
+      const camera = document.querySelector("[camera]");
+      window.addEventListener("wheel", (e) => {
+        let currentFov = camera.getAttribute("camera").fov;
+        let newFov = currentFov + e.deltaY * 0.05;
+        newFov = Math.max(30, Math.min(100, newFov));
+        camera.setAttribute("camera", "fov", newFov);
+      });
+
+      document.getElementById("prevArrow").addEventListener("click", () => {
+        const index = scenes.findIndex(s => s.id === currentSceneId);
+        if (index > 0) {
+          changeScene(`scene${index}`);
+        }
+      });
+
+      document.getElementById("nextArrow").addEventListener("click", () => {
+        const index = scenes.findIndex(s => s.id === currentSceneId);
+        if (index < scenes.length - 1) {
+          changeScene(`scene${index + 2}`);
+        }
+      });
+
+      document.getElementById("sceneSelect").addEventListener("change", (e) => {
+        changeScene(e.target.value);
+      });
+
+      const prevArrow = document.getElementById("prevArrow");
+      prevArrow.src = "./images/flecha_inactiva.png";
+      prevArrow.style.pointerEvents = "none";
+      prevArrow.style.opacity = "0.6";
+    });
+    function closeWelcomeModal() {
+      document.getElementById("welcomeModal").style.display = "none";
+      document.getElementById("welcomeBackdrop").style.display = "none";
+    }
+  </script>
+  <div id="welcomeBackdrop" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5); z-index: 99998; display: block;"></div>
+</body>
+
+</html>
