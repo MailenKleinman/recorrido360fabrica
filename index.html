@@ -93,6 +93,24 @@
       z-index: 10000;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
+
+    @media (max-width: 768px) {
+    .map-container {
+      display: none !important;
+    }
+
+    .tooltip {
+      padding: 20px;
+    }
+
+    #headerTitle {
+      font-size: 15px;
+    }
+
+    select#sceneSelect {
+      display: none !important;
+    }
+    }
   </style>
 </head>
 
@@ -128,7 +146,10 @@
     </select>
   </div>
 
-  <div style="position: absolute; bottom: 20px; left: 20px; z-index: 1000;">
+  <div class="map-container"  style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-start;">
+    <div style="margin-bottom: 4px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 4px; font-size: 14px; color: #0c579b;">
+      Mapa
+    </div>
     <img id="mapImage" src="./images/mapa_1.png" alt="Mapa"
       style="width: 220px; height: auto; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.3);">
   </div>
@@ -562,8 +583,7 @@
       document.getElementById("welcomeBackdrop").style.display = "none";
     }
   </script>
-  <div id="welcomeBackdrop" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.5); z-index: 99998; display: block;"></div>
+  <div id="welcomeBackdrop" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 99998; display: block;"></div>
 </body>
 
 </html>
