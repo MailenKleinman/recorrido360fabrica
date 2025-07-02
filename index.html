@@ -7,7 +7,9 @@
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap"
+    rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -95,21 +97,35 @@
     }
 
     @media (max-width: 768px) {
-    .map-container {
-      display: none !important;
+      .map-container {
+        display: none !important;
+      }
+
+      .tooltip {
+        padding: 20px;
+      }
+
+      #headerTitle {
+        font-size: 15px;
+      }
+
+      select#sceneSelect {
+        display: none !important;
+      }
     }
 
-    .tooltip {
-      padding: 20px;
-    }
-
-    #headerTitle {
-      font-size: 15px;
-    }
-
-    select#sceneSelect {
-      display: none !important;
-    }
+    /* Transition overlay for scene changes */
+    #transitionOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100000;
+      transition: opacity 0.6s ease;
     }
   </style>
 </head>
@@ -119,7 +135,8 @@
 
   <div id="welcomeModal" class="tooltip" style="display: block; z-index: 99999;">
     <img src="./images/bienvenida.jpg" alt="">
-    <p>Bienvenido al recorrido 360° de la fábrica de <span style="font-weight: 600;">Laminación Paulista</span>.<br>Usá las flechas o el menú para avanzar por los sectores.
+    <p>Bienvenido al recorrido 360° de la fábrica de <span style="font-weight: 600;">Laminación Paulista</span>.<br>Usá
+      las flechas o el menú para avanzar por los sectores.
     </p>
     <button class="close-btn" onclick="closeWelcomeModal()">Comenzar</button>
   </div>
@@ -146,11 +163,13 @@
     </select>
   </div>
 
-  <div class="map-container"  style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-start;">
-    <div style="margin-bottom: 4px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 4px; font-size: 14px; color: #0c579b;">
+  <div class="map-container"
+    style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-start;">
+    <div
+      style="margin-bottom: 4px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 4px; font-size: 14px; color: #0c579b;">
       Mapa
     </div>
-    <img id="mapImage" src="./images/mapa_1.png" alt="Mapa"
+    <img id="mapImage" src="./images/mapa-1.png" alt="Mapa"
       style="width: 220px; height: auto; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.3);">
   </div>
 
@@ -179,7 +198,7 @@
         id: "scene1",
         image: "./images/recorrido_1.jpg",
         label: "Fundicion",
-        tooltip: "Aquí se realiza el proceso de fundición a altas temperaturas.",
+        tooltip: "El recorrido comienza en la etapa de fundición. Se compone de tres hornos en tandem y se obtiene el aluminio líquido y luego una lámina de aluminio de aproximadamente 9 mm.",
         media: { type: "video", src: "./images/modal/modal1.mp4" }
       },
       {
@@ -199,199 +218,181 @@
       {
         id: "scene4",
         image: "./images/recorrido_4.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 4.",
-        media: null
+        label: "Laboratorio",
+        tooltip: "El laboratorio está destinado a contener los equipos de medición y control de calidad (como el durómetro) y el PLC de la fábrica.",
+        media: { type: "image", src: "./images/modal/modal5.png" },
+        signPosition: "0 1 -4",     
+        signRotation: "0 -10 0"   
       },
       {
         id: "scene5",
         image: "./images/recorrido_5.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 5.",
-        media: null
+        label: "Almacenado",
+        media: { type: "image", src: "./images/modal/modal6.png" },
+        signPosition: "-2 1 -4",     
+        signRotation: "0 10 0"  
       },
       {
         id: "scene6",
         image: "./images/recorrido_6.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 6.",
-        media: null
+        label: "Scrap",
+        tooltip: "Laminación Paulista recupera material SCRAP (piezas mal hechas, refilos, viruta, chapas, etc.) de los clientes. Se transforma en materia prima para entregar un producto terminado cobrando únicamente la transformación.",
+        media: { type: "image", src: "./images/modal/modal6.png" },
+        signPosition: "5 -2 -4",     
+        signRotation: "0 -10 0"   
       },
       {
         id: "scene7",
         image: "./images/recorrido_7.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 7.",
-        media: null
+        label: "Traslado",
+        tooltip: "Se utilizan sistemas de elevación y transporte para trasladar las bobinas.",
+        media: { type: "image", src: "./images/modal/modal8.png" },
+        signPosition: "0 1 -4",     
+        signRotation: "0 -10 0"  
       },
       {
         id: "scene8",
         image: "./images/recorrido_8.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 8.",
-        media: null
+        label: "Laminado",
+        signPosition: "-2 1 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene9",
         image: "./images/recorrido_9.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 9.",
-        media: null
+        label: "Laminadora",
+        tooltip: "La bobina obtenida en el proceso anterior, se coloca en un laminador continuo tipo CUARTO (es aquel laminador que tiene dos cilindros de trabajo y dos cilindros de apoyo). La velocidad de laminación comienza en 60 mts/min y llega a los 180 mts /min.",
+        media: { type: "video", src: "./images/modal/modal10.mp4" },
+        signPosition: "-3 1 -4",     
+        signRotation: "0 5 0" 
       },
       {
         id: "scene10",
         image: "./images/recorrido_10.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 10.",
-        media: null
+        label: "Espesores",
+        tooltip: "Las bobinas pasan de un espesor original de 9 mm a un espesor mínimo de 0,6 mm o espesores intermedios que el mercado requiera.",
+        media: { type: "video", src: "./images/modal/modal10.mp4" },
+        signPosition: "-3 1 -4",     
+        signRotation: "0 5 0" 
       },
       {
         id: "scene11",
         image: "./images/recorrido_11.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 11."
+        label: "Corte continuo",
+        tooltip: "En esta etapa, la bobina obtenida del proceso anterior se la trabaja flejando en sentido longitudinal (obteniéndose bobinas de anchos menores) y/o también cortándola de forma transversal (obteniéndose chapas). Las bobinas de anchos menores son utilizadas en líneas de corte de discos automatizadas.",
+        media: { type: "video", src: "./images/modal/modal12.mp4" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene12",
         image: "./images/recorrido_12.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 12.",
-        media: null
+        label: "Maquinaria de corte",
+        tooltip: "Estas líneas cuentan con desbobinador, alimentador, enrollador y cinta transportadora de la cual salen diversas medidas de discos, según las necesidades de nuestros clientes.",
+        media: { type: "image", src: "./images/modal/modal12.png" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene13",
         image: "./images/recorrido_13.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 13.",
-        media: null
+        label: "Guillotina",
+        tooltip: "La bobina se la trabaja flejando en sentido longitudinal y/o también cortándola de forma transversal.",
+        media: { type: "image", src: "./images/modal/modal14.png" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene14",
         image: "./images/recorrido_14.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 14.",
-        media: null
+        label: "Resultado",
+        media: { type: "image", src: "./images/modal/modal14.png" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene15",
         image: "./images/recorrido_15.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 15.",
+        label: "Oficinas",
         media: null
       },
       {
         id: "scene16",
         image: "./images/recorrido_16.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 16.",
-        media: null
+        label: "Almacenado",
+        media: null,
+        signPosition: "5 -1 -4",     
+        signRotation: "0 -10 0" 
       },
       {
         id: "scene17",
         image: "./images/recorrido_17.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 17.",
-        media: null
+        label: "Troqueladora",
+        media: { type: "video", src: "./images/modal/modal21.mp4" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene18",
         image: "./images/recorrido_18.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 18.",
-        media: null
+        label: "Homogeneizado",
+        tooltip: "Los discos, chapas o bobinas obtenidos de los procesos detallados anteriormente, se normalizan u homogeneizan en hornos de recocido/estufas, por el lapso de 9 a 10 horas. De esta forma, todos los granos de aluminio presentes en estos productos, vuelven a tener las características de ductilidad y plasticidad para procesos posteriores, como pueden ser: embutido profundo, estampado, doblado, plegado o repujado, etc.",
+        media: { type: "video", src: "./images/modal/modal22.mp4" },
+        signPosition: "0 1 -4",     
+        signRotation: "0 -10 0"  
       },
       {
         id: "scene19",
         image: "./images/recorrido_19.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 19.",
-        media: null
+        label: "Almacenado discos",
+        media: { type: "image", src: "./images/modal/modal24.png" },
+        signPosition: "-2 0 -4",     
+        signRotation: "0 10 0" 
       },
       {
         id: "scene20",
         image: "./images/recorrido_20.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 20.",
-        media: null
+        label: "Almacenado bobinas",
+        media: { type: "image", src: "./images/modal/modal25.png" },
+        signPosition: "3 -1 -4",     
+        signRotation: "0 -10 0" 
       },
       {
         id: "scene21",
         image: "./images/recorrido_21.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 21.",
-        media: null
+        label: "Almacenado chapas",
+        media: { type: "image", src: "./images/modal/modal26.png" },
+        signPosition: "0 1 -4",     
+        signRotation: "0 -10 0"   
       },
       {
         id: "scene22",
         image: "./images/recorrido_22.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 22.",
-        media: null
-      },
-      {
-        id: "scene23",
-        image: "./images/recorrido_23.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 23.",
-        media: null
-      },
-      {
-        id: "scene24",
-        image: "./images/recorrido_24.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 24.",
-        media: null
-      },
-      {
-        id: "scene25",
-        image: "./images/recorrido_25.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 25.",
-        media: null
-      },
-      {
-        id: "scene26",
-        image: "./images/recorrido_26.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 26.",
-        media: null
-      },
-      {
-        id: "scene27",
-        image: "./images/recorrido_27.jpg",
-        label: "Info",
-        tooltip: "Esto es un cartel informativo del sector 27.",
-        media: null
+        label: "Oficina principal",
+        signPosition: "-2 1 -4",     
+        signRotation: "0 10 0"   
       }
-      // ...continuar hasta scene27
     ];
 
     const scenes = rawScenes.map((scene, index) => {
       const hotspots = [
         {
-          position: "5 1 -3",
-          rotation: "0 -100 0",
+          position: scene.signPosition || (index === 1 ? "3 -1 -4" : "5 1 -3"),
+          rotation: scene.signRotation || (index === 1 ? "0 -50 0" : "0 -100 0"),
           color: "#0c579b",
           label: scene.label,
           tooltip: scene.tooltip
         }
       ];
 
-      if (index === 1) {
-        hotspots[0].position = "3 -1 -4";// cartel más a la izquierda
-        hotspots[0].rotation = "0 -50 0";
-      }
-
       if (index === 2) {
-        hotspots[0].position = "5 -1 -3";   // cartel más a la izquierda
-        hotspots[0].rotation = "0 -100 0";
+        hotspots[0].position = scene.signPosition || "5 -1 -3";   // cartel más a la izquierda
+        hotspots[0].rotation = scene.signRotation || "0 -100 0";
       }
-
 
       if (index > 0) {
         scene.backTarget = `scene${index}`;
       }
-
 
       return {
         id: scene.id,
@@ -431,6 +432,10 @@
     }
 
     function createHotspot(hotspot, sceneEl) {
+      // Only create a hotspot if there is a label or tooltip
+      if (!hotspot.label && !hotspot.tooltip) {
+        return;
+      }
       if (hotspot.type === "arrow") {
         const arrow = document.createElement("a-image");
         arrow.setAttribute("src", "#arrowImg");
@@ -463,24 +468,39 @@
           startEvents: "mouseleave",
           dur: 200
         });
-        plane.addEventListener("click", () => showTooltip(hotspot.tooltip));
 
-        const label = document.createElement("a-text");
-        label.setAttribute("value", hotspot.label);
-        label.setAttribute("position", "0 0 0.01"); // un poco más adelante del plano
-        label.setAttribute("align", "center");
-        label.setAttribute("color", "white");
+        // Only add tooltip event if tooltip is non-empty
+        if (hotspot.tooltip) {
+          plane.addEventListener("click", () => showTooltip(hotspot.tooltip));
+        }
 
         const wrapper = document.createElement("a-entity");
         wrapper.setAttribute("position", hotspot.position);
         wrapper.setAttribute("rotation", hotspot.rotation);
 
+        // Only add label if label is non-empty
+        if (hotspot.label) {
+          // Calculate width based on label length
+          const charWidth = 0.18; // Adjusted for larger font
+          const padding = 1.0;    // Extra width for larger font
+          const labelLength = 3.5;
+          const planeWidth = labelLength * charWidth + padding;
+          plane.setAttribute("width", planeWidth);
+
+          const label = document.createElement("a-text");
+          label.setAttribute("value", hotspot.label);
+          label.setAttribute("align", "center");
+          label.setAttribute("color", "white");
+          label.setAttribute("width", planeWidth * 0.92); // slightly less than the plane
+          label.setAttribute("position", "0 0 0.01"); // slightly in front of the plane
+          label.setAttribute("scale", "2 2 2"); // much larger font size
+          wrapper.appendChild(label);
+        }
+
         wrapper.appendChild(plane);
-        wrapper.appendChild(label);
         sceneEl.appendChild(wrapper);
       }
     }
-
     function restartTour() {
       document.getElementById("endModal").style.display = "none";
       changeScene("scene1");
@@ -500,40 +520,73 @@
 
       scene.appendChild(container);
     }
-    function changeScene(id) {
-      document.getElementById("sceneSelect").value = id;
-
-      // Actualizar imagen de mapa
-      const mapImage = document.getElementById("mapImage");
-      const sceneIndex = scenes.findIndex(s => s.id === id);
-      if (mapImage && sceneIndex !== -1) {
-        mapImage.src = `./images/mapa_${sceneIndex + 1}.png`;
-      }
-
-      const sceneData = scenes.find(s => s.id === id);
-      if (sceneData) {
-        currentSceneId = id;
-        renderScene(sceneData);
-
-        if (sceneIndex === scenes.length - 1) {
-          document.getElementById("endModal").style.display = "block";
-        }
-        // Mostrar o desactivar la flecha "atrás"
-        const prevArrow = document.getElementById("prevArrow");
-        if (prevArrow) {
-          if (sceneIndex === 0) {
-            prevArrow.src = "./images/flecha_inactiva.png";
-            prevArrow.style.pointerEvents = "none";
-            prevArrow.style.opacity = "0.6";
-          } else {
-            prevArrow.src = "./images/flecha_atras.png";
-            prevArrow.style.pointerEvents = "auto";
-            prevArrow.style.opacity = "1";
-          }
+    function animateFov(camera, from, to, duration, callback) {
+      const start = performance.now();
+      function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = from + (to - from) * progress;
+        camera.setAttribute('camera', 'fov', current);
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          if (callback) callback();
         }
       }
+      requestAnimationFrame(animate);
     }
 
+    function changeScene(id) {
+      const camera = document.querySelector('[camera]');
+      const initialFov = camera.getAttribute('camera').fov;
+      const zoomFov = 55; // less dramatic zoom
+      const duration = 400; // slightly faster
+
+      // Zoom in only
+      animateFov(camera, initialFov, zoomFov, duration, () => {
+        document.getElementById("sceneSelect").value = id;
+
+        // Actualizar imagen de mapa
+        const mapImage = document.getElementById("mapImage");
+        const sceneIndex = scenes.findIndex(s => s.id === id);
+        if (mapImage && sceneIndex !== -1) {
+          mapImage.src = `./images/mapa-${sceneIndex + 1}.png`;
+        }
+
+        const sceneData = scenes.find(s => s.id === id);
+        if (sceneData) {
+          currentSceneId = id;
+          renderScene(sceneData);
+          // Reset POV to face forward (works with look-controls)
+          camera.setAttribute('rotation', { x: 0, y: 0, z: 0 });
+          const lookControls = camera.components["look-controls"];
+          if (lookControls) {
+            lookControls.pitchObject.rotation.x = 0;
+            lookControls.yawObject.rotation.y = 0;
+          }
+
+          if (sceneIndex === scenes.length - 1) {
+            document.getElementById("endModal").style.display = "block";
+          }
+          // Mostrar o desactivar la flecha "atrás"
+          const prevArrow = document.getElementById("prevArrow");
+          if (prevArrow) {
+            if (sceneIndex === 0) {
+              prevArrow.src = "./images/flecha_inactiva.png";
+              prevArrow.style.pointerEvents = "none";
+              prevArrow.style.opacity = "0.6";
+            } else {
+              prevArrow.src = "./images/flecha_atras.png";
+              prevArrow.style.pointerEvents = "auto";
+              prevArrow.style.opacity = "1";
+            }
+          }
+        }
+
+        // Instantly reset FOV to normal
+        camera.setAttribute('camera', 'fov', initialFov);
+      });
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
       renderScene(scenes[0]);
@@ -542,7 +595,7 @@
       scenes.forEach(scene => {
         const option = document.createElement("option");
         option.value = scene.id;
-        option.textContent = `${scene.id.replace("scene", "Sector ")} – ${scene.label}`;
+        option.textContent = `${scene.id.replace("scene", "Sector ")} ${scene.label}`;
         select.appendChild(option);
       });
       select.value = scenes[0].id; // Mostrar escena actual
@@ -583,7 +636,10 @@
       document.getElementById("welcomeBackdrop").style.display = "none";
     }
   </script>
-  <div id="welcomeBackdrop" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 99998; display: block;"></div>
+  <div id="welcomeBackdrop"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 99998; display: block;">
+  </div>
+  <div id="transitionOverlay"></div>
 </body>
 
 </html>
