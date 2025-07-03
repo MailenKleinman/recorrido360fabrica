@@ -228,7 +228,8 @@
         id: "scene5",
         image: "./images/recorrido_5.jpg",
         label: "Almacenado",
-        media: { type: "image", src: "./images/modal/modal6.png" },
+        tooltip: "Sector de almacenamiento",
+        media: { type: "video", src: "./images/modal/modal5.mp4" },
         signPosition: "-2 1 -4",     
         signRotation: "0 10 0"  
       },
@@ -237,7 +238,7 @@
         image: "./images/recorrido_6.jpg",
         label: "Scrap",
         tooltip: "Laminación Paulista recupera material SCRAP (piezas mal hechas, refilos, viruta, chapas, etc.) de los clientes. Se transforma en materia prima para entregar un producto terminado cobrando únicamente la transformación.",
-        media: { type: "image", src: "./images/modal/modal6.png" },
+        media: { type: "image", src: "./images/modal/modal99.png" },
         signPosition: "5 -2 -4",     
         signRotation: "0 -10 0"   
       },
@@ -254,6 +255,8 @@
         id: "scene8",
         image: "./images/recorrido_8.jpg",
         label: "Laminado",
+        tooltip: "A continuación, se visualiza el sector derecho de la fábrica que está destinado a la laminación, mientras que el sector izquierdo está destinado al corte y homogeneizado del material.",
+        media: { type: "image", src: "./images/modal/modal16.png" },
         signPosition: "-2 1 -4",     
         signRotation: "0 10 0" 
       },
@@ -271,7 +274,7 @@
         image: "./images/recorrido_10.jpg",
         label: "Espesores",
         tooltip: "Las bobinas pasan de un espesor original de 9 mm a un espesor mínimo de 0,6 mm o espesores intermedios que el mercado requiera.",
-        media: { type: "video", src: "./images/modal/modal10.mp4" },
+        media: { type: "image", src: "./images/modal/modal11.png" },
         signPosition: "-3 1 -4",     
         signRotation: "0 5 0" 
       },
@@ -298,7 +301,7 @@
         image: "./images/recorrido_13.jpg",
         label: "Guillotina",
         tooltip: "La bobina se la trabaja flejando en sentido longitudinal y/o también cortándola de forma transversal.",
-        media: { type: "image", src: "./images/modal/modal14.png" },
+        media: { type: "video", src: "./images/modal/modal14.mp4" },
         signPosition: "-2 0 -4",     
         signRotation: "0 10 0" 
       },
@@ -306,28 +309,31 @@
         id: "scene14",
         image: "./images/recorrido_14.jpg",
         label: "Resultado",
-        media: { type: "image", src: "./images/modal/modal14.png" },
+        tooltip: "El resultado final es un producto terminado que puede ser un disco, una chapa o una bobina, según la necesidad del cliente.",
+        media: { type: "image", src: "./images/modal/modal9.png" },
         signPosition: "-2 0 -4",     
         signRotation: "0 10 0" 
       },
       {
         id: "scene15",
         image: "./images/recorrido_15.jpg",
-        label: "Oficinas",
+        label: "Administracion",
         media: null
       },
       {
         id: "scene16",
         image: "./images/recorrido_16.jpg",
-        label: "Almacenado",
-        media: null,
-        signPosition: "5 -1 -4",     
+        label: "Corte y homogeneizado",
+        tooltip: "A continuación, se visualiza el sector izquierdo de la fábrica que está destinado al corte y homogeneizado del material.",
+        media: { type: "image", src: "./images/modal/modal18.png" },
+        signPosition: "4 1 -3",     
         signRotation: "0 -10 0" 
       },
       {
         id: "scene17",
         image: "./images/recorrido_17.jpg",
         label: "Troqueladora",
+        tooltip: "El proceso de troquelado es el que permite obtener discos de aluminio con un diámetro específico, según la necesidad del cliente.",
         media: { type: "video", src: "./images/modal/modal21.mp4" },
         signPosition: "-2 0 -4",     
         signRotation: "0 10 0" 
@@ -345,6 +351,7 @@
         id: "scene19",
         image: "./images/recorrido_19.jpg",
         label: "Almacenado discos",
+        tooltip: "Sector de almacenamiento de discos de aluminio",
         media: { type: "image", src: "./images/modal/modal24.png" },
         signPosition: "-2 0 -4",     
         signRotation: "0 10 0" 
@@ -352,22 +359,15 @@
       {
         id: "scene20",
         image: "./images/recorrido_20.jpg",
-        label: "Almacenado bobinas",
-        media: { type: "image", src: "./images/modal/modal25.png" },
-        signPosition: "3 -1 -4",     
-        signRotation: "0 -10 0" 
-      },
-      {
-        id: "scene21",
-        image: "./images/recorrido_21.jpg",
         label: "Almacenado chapas",
+        tooltip: "Sector de almacenamiento de chapas de aluminio",  
         media: { type: "image", src: "./images/modal/modal26.png" },
         signPosition: "0 1 -4",     
         signRotation: "0 -10 0"   
       },
       {
-        id: "scene22",
-        image: "./images/recorrido_22.jpg",
+        id: "scene21",
+        image: "./images/recorrido_21.jpg",
         label: "Oficina principal",
         signPosition: "-2 1 -4",     
         signRotation: "0 10 0"   
